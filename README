@@ -1,0 +1,127 @@
+C-Orbit, a Chinese text analyzer
+
+** Overview
+
+Corbit is a text analyzer for Chinese, which provides various functionalities to handle word segmentation (chunking), part-of-speech (POS) tagging, and dependency parsing. It is built on a extension of incremental (transition-based) parsing algorithms, and enables to process each of (or all of) these tasks in a linear-time complexity to the sentence length, while still retaining state-of-the-art performance. It can either handle two of these tasks jointly, or handle all three tasks in a full joint model. The use of joint models usually results in higher accuracies, particularly for upper-level tasks (i.e. POS tagging and dependency parsing), with some cost in increased computational time. Models that are trained with Chinese treebanks are provided.
+
+
+** Algorithms
+
+The complete description of algorithms used in this system is described in the following papers:
+
+<< joint word segmentation and POS tagging >>
+
+- Yue Zhang and Stephen Clark. A Fast Decoder for Joint Word Segmentation and POS-tagging Using a Single Discriminative Model. In Proceedings of 2010 Conference of Empirical Methods on Natural Language Processing (EMNLP-2010). Massachusetts, USA. 2012.
+
+<< dependency parsing >>
+
+- Liang Huang and Kenji Sagae. Dynamic Programming for Linear-Time Incremental Parsing. In Proceedings of the 48th Annual Meeting of the Association for Computational Linguistics (ACL-2010).
+
+- Yue Zhang and Joakim Nivre. Transition-Based Dependency Parsing with Rich Non-Local Features. In Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies (ACL-HLT-2011).
+
+<< POS tagging and dependency parsing >>
+
+- Jun Hatori, Takuya Matsuzaki, Yusuke Miyao, and Jun'ichi Tsujii. Incremental Joint POS Tagging and Dependency Parsing in Chinese. In the Proceedings of the 5th International Joint Conference on Natural Language Processing (IJCNLP-2011). Chiang Mai, Thailand. 2011.
+
+<< joint word segmentation, POS tagging, and depenency parsing >>
+
+- Jun Hatori, Takuya Matsuzaki, Yusuke Miyao, and Jun'ichi Tsujii. Incremental Joint Approach to Word Segmentation, POS Tagging, and Dependency Parsing in Chinese. In Proceedings of the 50th Annual Meeting of the Association for Computational Linguistics (ACL-2012). Jeju, Korea. 2012.
+
+
+** Features
+
+It has several processing modes based on the degree of integration:
+
+1. sp-mode: joint word segmentation and POS tagging
+
+This mode is almost equivalent to the joint word segmentation and POS tagging model described in Zhang and Clark (2010). However, it has several additional functions, including the use of external lexicon and character-type features, which are considered effective to build a practical system to handle real-world text. These additional functions are provided via program options. 
+
+2. d-mode: dependency parsing
+
+This mode simulates the dependency parser described in Huang and Sagae (2010), and its extension by the use of additional features from Zhang and Nivre (2011). The feature set to use can be chosen by --feature-type option. The second feature set does not include all the features described in Zhang and Nivre (2011), because some of these features cannot be incorporated into arc-standard shift-reduce parsers. However, despite the lack of these features, our second feature set achieves almost the same accuracy as Zhang and Nivre's original model, with a gain from the dynamic-programming extension.
+
+3. pd-mode: joint POS tagging and dependency parsing
+
+This mode performs joint POS tagging and dependency parsing using the algorithm described in Hatori et al. (2011). Some bugs are fixed, resulting in slightly improved accuracies over the original implementation.
+
+4. spd-mode: joint word segmentation, POS tagging, and dependency parsing
+
+This mode performs joint word segmentation, POS tagging, and dependency parsing using the algorithm describe in Hatori et al. (2012). You can also use delayed features (with --delay option) to improve the accuracy of dependency parsing further.
+
+
+** Download/Installation
+
+JRE 1.6 or higher is required.
+As a prerequisite, the environmental variable PATH must include the java bin folder.
+
+** Usage
+
+Usage: ./corbit.sh <sp|spd|d|pd> (arguments..)
+
+1. sp: joint word segmentation and POS tagging model by Zhang & Clark (2010)
+2. spd: joint word segmentation, POS tagging, and dependency parsing model by Hatori et al. (2012)
+3. d: dependency parsing model by Huang & Sagae (2010) or Zhang & Nivre (2011)
+4. pd: joint POS tagging and dependency parsing model by Hatori et al. (2011)
+
+== Process ==
+
+./corbit.sh <sp|d|pd|spd> Run (model-file) [options..] < input > output
+
+== Training ==
+
+./corbit.sh <sp|d|pd|spd> Train (train-file) (dev-file) (#iteration) (model-file-to-save) --dict (dict-file) (threshold) [options..]
+
+== Evaluation ==
+
+./corbit.sh <sp|d|pd|spd> Test (model-file) [options..] < input > output
+
+
+** IO Format
+
+Corbit currently supports the following file formats:
+
+* CTB Format
+
+(word form)/(POS)/(head-id) (word form)/(POS)/(head-id) ...
+
+Each line corresponds to a sentence.
+Word indices start from 0, and the head id -1 denotes a dependency to the root.
+
+* Plain Format
+
+Each line corresponds to a sentence.
+(word form)/(POS) (word form)/(POS) ...
+
+* Malt Format (default)
+
+index <tab> word form <tab> POS tag <tab> head index
+index <tab> word form <tab> POS tag <tab> head index
+index <tab> word form <tab> POS tag <tab> head index
+
+index <tab> word form <tab> POS tag <tab> head index
+index <tab> word form <tab> POS tag <tab> head index
+index <tab> word form <tab> POS tag <tab> head index
+...
+
+Each line corresponds to a word.
+Sentences are separated by a single blank line.
+
+** To Do
+
+We plan the following functions to support in the near future:
+
+- labeled dependency parsing
+- support for English and other languages
+
+
+** Revision History
+
+
+** Copyright and Licensing Information
+
+This software is released under the Modified BSD License.
+See the COPYING file for details.
+
+Copyright (c) 2010-2012, Jun Hatori
+All rights reserved.
+
